@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VoidIRC</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header class="head">
+        <h1>Välkommen till VoidIRC</h1>
+    </header>
+
+    <div class="chat">
+        <p>VoidIRC Main Chat</p>
+        <hr>
+        <ul>
+           <li id="message">
+            
+           </li> 
+           
+        </ul>
+        <hr>
+        <input type="text" placeholder="Chat" class="input" id="inputBox">
+    </div>
+
+    <script>
+        ws = new WebSocket('ws://llocalhost:8080')
+
+        document.getElementById('inputBox').addEventListener('keydown', function(event) {
+            if (event.keyCode == 13) {
+                sendMessage();
+            }
+        });
+
+        function sendMessage() {
+
+            input = document.getElementById("inputBox");
+            text = input.value.trim();
+            arrMess = text.split(" ");
+
+            command = arrMess[0];
+            argument = arrMess.slice(1);
+
+            if (
+                command == "/join" ||
+                command == "/nick" ||
+                command == "/msg"  ||
+                command == "/list" ||
+                command == "/quit"
+            ) {
+                const message = {
+                    type: command.split("/")[1].toUpperCase(),
+                    data: argument
+                }
+                ws.send(JSON.stringify(message));
+            } else {
+                alert(command + " IS INVALID")
+            }
+        }
+
+        function receiveMessage(){
+            
+        }
+    </script>
+</body>
+</html>
