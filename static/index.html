@@ -25,22 +25,44 @@
     </div>
 
     <script>
-        ws = new WebSocket('ws://llocalhost:8080')
+        ws = new WebSocket('ws://localhost:8080')
+        
+        // Handle incoming messages
+        ws.onmessage = function(event) {
+            const message = JSON.parse(event.data);
+            console.log('Received:', message);
+            
+            const messageList = document.getElementById('message');
+            
+            if (message.type === 'MSG') {
+                messageList.innerHTML += `<div>[${message.room}] ${message.from}: ${message.data}</div>`;
+            } else if (message.type === 'JOIN') {
+                messageList.innerHTML += `<div style="color: green;">${message.message}</div>`;
+            } else if (message.type === 'NICK') {
+                messageList.innerHTML += `<div style="color: blue;">${message.message}</div>`;
+            } else if (message.type === 'ERROR') {
+                messageList.innerHTML += `<div style="color: red;">Error: ${message.message}</div>`;
+            } else if (message.type === 'LIST') {
+                messageList.innerHTML += `<div>Available rooms: ${message.rooms.join(', ')}</div>`;
+            }
+        }
 
         document.getElementById('inputBox').addEventListener('keydown', function(event) {
-            if (event.keyCode == 13) {
+            if (event.key === 'Enter') {
+                event.preventDefault();
                 sendMessage();
             }
         });
 
         function sendMessage() {
-
-            input = document.getElementById("inputBox");
-            text = input.value.trim();
-            arrMess = text.split(" ");
-
-            command = arrMess[0];
-            argument = arrMess.slice(1);
+            const input = document.getElementById("inputBox");
+            const text = input.value.trim();
+            
+            if (!text) return; // Don't send empty messages
+            
+            const arrMess = text.split(" ");
+            const command = arrMess[0];
+            const argument = arrMess.slice(1);
 
             if (
                 command == "/join" ||
@@ -53,9 +75,15 @@
                     type: command.split("/")[1].toUpperCase(),
                     data: argument
                 }
-                ws.send(JSON.stringify(message));
+                
+                if (ws.readyState === WebSocket.OPEN) {
+                    ws.send(JSON.stringify(message));
+                    input.value = ""; // Clear input after sending
+                } else {
+                    alert("WebSocket not connected");
+                }
             } else {
-                alert(command + " IS INVALID")
+                alert(command + " IS INVALID");
             }
         }
 

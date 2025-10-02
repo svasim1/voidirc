@@ -1,5 +1,5 @@
-module.exports = function handleJoin(ctx, parsed, activeRooms) {
-    const room = parsed.data;
+export default function handleJoin(ctx, parsed, activeRooms) {
+    const room = Array.isArray(parsed.data) ? parsed.data[0] : parsed.data;
 
     if (!room) {
         ctx.websocket.send(JSON.stringify({ 

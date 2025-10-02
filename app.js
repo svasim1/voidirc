@@ -1,15 +1,18 @@
 import Koa from 'koa';
 import websocket from 'koa-websocket';
 import serve from 'koa-static';
+import handleNick from './handlers/nick.js';
+import handleJoin from './handlers/join.js';
+import handleMsg from './handlers/msg.js';
 
 const koa = new Koa();
 const app = websocket(koa);
 
 // HTTP status codes
-const HTTP_OK = 200;
-const HTTP_INVALID = 400;
+const HTTP_OK       = 200;
+const HTTP_INVALID  = 400;
 const HTTP_NOTFOUND = 404;
-const HTTP_INTERNAL = 500;
+const HTTP_INTERNAL= 500;
 
 // startup/shutdown of server
 const port = 8080;
@@ -50,6 +53,9 @@ console.log(`Server started on port ${port}`);
 // websocket
 app.ws.use(async(ctx) => {
     console.log('WebSocket connection established');
+    
+    // initialize user tracking
+    users.set(ctx.websocket, {nick: null, room: null});
 
     // handle messages
     ctx.websocket.on('message', (message) => {
@@ -66,9 +72,9 @@ app.ws.use(async(ctx) => {
         if (parsed.type === 'NICK') // {"type": "NICK", "data": "<name>"}
             handleNick(ctx, parsed);
         else if (parsed.type === 'JOIN') // {"type": "JOIN", "data": "<room>"}
-            handleJoin(ctx, parsed);
+            handleJoin(ctx, parsed, rooms);
         else if (parsed.type === 'MSG') // {"type": "MSG", "data": "<message>"}
-            handleMsg(ctx, parsed);
+            handleMsg(ctx, parsed, rooms);
         else if (parsed.type === 'LIST')
             ctx.websocket.send(JSON.stringify({ type: 'LIST', rooms: Array.from(activeRooms) }));
         else if (parsed.type === 'QUIT') // {"type": "QUIT"}

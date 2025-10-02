@@ -1,5 +1,5 @@
-module.exports = function handleNick(ctx, parsed) {
-    const nick = parsed.data;
+export default function handleNick(ctx, parsed) {
+    const nick = Array.isArray(parsed.data) ? parsed.data[0] : parsed.data;
 
     if (!nick) {
         ctx.websocket.send(JSON.stringify({ 

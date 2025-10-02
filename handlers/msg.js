@@ -1,5 +1,5 @@
-module.exports = function handleMsg(ctx, parsed, activeRooms) {
-    const message = parsed.data; 
+export default function handleMsg(ctx, parsed, activeRooms) {
+    const message = Array.isArray(parsed.data) ? parsed.data.join(' ') : parsed.data; 
     const room = ctx.room;
     const nick = ctx.nick || "Anonymous";
 
