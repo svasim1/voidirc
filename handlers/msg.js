@@ -12,7 +12,7 @@ module.exports = function handleMsg(ctx, parsed, activeRooms) {
     }
 
     // Broadcast till alla i rummet
-    for (const clientCtx of activeRooms.get(room) || []) {
+    for (const clientCtx of activeRooms.get(room)) {
         if (clientCtx.websocket.readyState === 1) { // 1 = OPEN
             clientCtx.websocket.send(JSON.stringify({
                 type: 'MSG',
