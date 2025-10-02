@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Chat</title>
+</head>
+<body>
+  <h1>WebSocket Chat</h1>
+  <input id="msgInput" placeholder="Skriv ett meddelande..." />
+  <button id="sendBtn">Skicka</button>
+  <div id="chat"></div>
+
+  <script>
+    // öppna en WebSocket-anslutning
+    const socket = new WebSocket("ws://localhost:8080");
+
+    socket.addEventListener("open", () => {
+      console.log("WebSocket ansluten ✅");
+
+      // skicka nickname när man kopplar upp sig
+      socket.send(JSON.stringify({ type: "NICK", data: "Alice" }));
+
+      // gå med i en room
+      socket.send(JSON.stringify({ type: "JOIN", data: "general" }));
+    });
+
+    // lyssna på meddelanden från servern
+    socket.addEventListener("message", (event) => {
+      const msg = JSON.parse(event.data);
+      console.log("Mottaget från servern:", msg);
+
+      if (msg.type === "MSG") {
+        document.getElementById("chat").innerHTML += `<p>${msg.user}: ${msg.text}</p>`;
+      }
+      if (msg.type === "LIST") {
+        console.log("Aktiva rum:", msg.rooms);
+      }
+    });
+
+    // skicka meddelande när man klickar
+    document.getElementById("sendBtn").addEventListener("click", () => {
+      const text = document.getElementById("msgInput").value;
+      socket.send(JSON.stringify({ type: "MSG", data: text }));
+    });
+  </script>
+</body>
+</html>

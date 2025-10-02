@@ -1,0 +1,45 @@
+*{
+    margin: 0.2%;
+}
+
+body{
+        background-color: #000000;
+}
+
+.head{
+    text-align: center;
+    font-family: monospace;
+    color: #08CB00;
+    background-color: #253900;
+    padding: 1em;
+    border-radius: 1em;
+}
+
+.head h1:hover{
+    transform: scale(1.08);
+    transition: all 0.2s ease;
+}
+
+.chat{
+    text-align: center;
+   color: #08CB00;
+   background-color: #253900;
+   font-family: monospace;
+   font-weight: 900;
+   font-size:x-large;
+   padding: 1em;
+   margin: 1em;
+   border-radius: 1em;
+}
+
+.chat hr{
+    border: dotted #08CB00;
+    border-radius: 1em;
+}
+
+.chat input{
+    margin-left: 3%;
+    color: red;
+    background-color: #08CB00;
+
+}
