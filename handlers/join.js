@@ -1,4 +1,4 @@
-export default function handleJoin(ctx, parsed, activeRooms) {
+export default function handleJoin(ctx, parsed, rooms) {
     const room = Array.isArray(parsed.data) ? parsed.data[0] : parsed.data;
 
     if (!room) {
@@ -9,12 +9,22 @@ export default function handleJoin(ctx, parsed, activeRooms) {
         return;
     }
 
-    // Lägg till ctx i rummet
-    if (!activeRooms.has(room)) {
-        activeRooms.set(room, new Set());
+    // Om användaren redan är i ett rum → ta bort dem därifrån först
+    if (ctx.room && rooms.has(ctx.room)) {
+        rooms.get(ctx.room).delete(ctx);
+
+        // om rummet nu är tomt → ta bort det helt
+        if (rooms.get(ctx.room).size === 0) {
+            rooms.delete(ctx.room);
+        }
     }
 
-    activeRooms.get(room).add(ctx);
+    // Lägg till i nytt rum
+    if (!rooms.has(room)) {
+        rooms.set(room, new Set());
+    }
+
+    rooms.get(room).add(ctx);
     ctx.room = room;
 
     ctx.websocket.send(JSON.stringify({
