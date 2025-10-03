@@ -21,8 +21,7 @@ let server = null;
 
 // in-memory storage for users and rooms
 const users = new Map();
-const rooms = new Map();
-let activeRooms = new Set(['general']); 
+const rooms = new Map(); 
 
 // serve error page
 async function errorPage(ctx) {
@@ -70,13 +69,13 @@ app.ws.use(async(ctx) => {
         }
 
         if (parsed.type === 'NICK') // {"type": "NICK", "data": "<name>"}
-            handleNick(ctx, parsed);
+            handleNick(ctx, parsed, users);
         else if (parsed.type === 'JOIN') // {"type": "JOIN", "data": "<room>"}
             handleJoin(ctx, parsed, rooms);
         else if (parsed.type === 'MSG') // {"type": "MSG", "data": "<message>"}
             handleMsg(ctx, parsed, rooms);
         else if (parsed.type === 'LIST')
-            ctx.websocket.send(JSON.stringify({ type: 'LIST', rooms: Array.from(activeRooms) }));
+            ctx.websocket.send(JSON.stringify({ type: 'LIST', rooms: Array.from(rooms.keys()) }));
         else if (parsed.type === 'QUIT') // {"type": "QUIT"}
             ctx.websocket.close();
     });
