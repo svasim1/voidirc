@@ -46,8 +46,8 @@ koa.use(async (ctx) => {
     await errorPage(ctx);
 });
 
-server = koa.listen(port);
-console.log(`Server started on port ${port}`);
+server = koa.listen(port, '0.0.0.0');
+console.log(`Server started on http://0.0.0.0:${port}`);
 
 
 // websocket

@@ -25,7 +25,10 @@
     </div>
 
     <script>
-        ws = new WebSocket('ws://localhost:8080')
+        // Connect to the same host as the webpage
+        const wsUrl = `ws://${window.location.hostname}:${window.location.port || 8080}`;
+        ws = new WebSocket(wsUrl);
+        console.log('Connecting to:', wsUrl);
         
         // Handle incoming messages
         ws.onmessage = function(event) {
